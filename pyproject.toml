@@ -16,7 +16,11 @@ dependencies = [
     "opentelemetry-sdk (>=1.38.0,<2.0.0)",
     "opentelemetry-exporter-otlp-proto-http (>=1.38.0,<2.0.0)",
     "pydantic-settings (>=2.12.0,<3.0.0)",
-    "uvicorn (>=0.38.0,<0.39.0)"
+    "uvicorn (>=0.38.0,<0.39.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "opentelemetry-instrumentation-fastapi (>=0.59b0,<0.60)",
+    "opentelemetry-instrumentation-httpx (>=0.59b0,<0.60)",
+    "prometheus-fastapi-instrumentator (>=7.1.0,<8.0.0)"
 ]
 
 [build-system]

@@ -4,12 +4,10 @@ import logging
 import sys
 from typing import Dict, Optional
 
-from utils.constants import APP_NAME
-
 _OTLP_HANDLERS: Dict[str, logging.Handler] = {}
 
 
-def get_logger(service_name=APP_NAME) -> logging.Logger:
+def get_logger() -> logging.Logger:
     """Get an existing logger by service name.
 
     If the logger doesn't exist, it will be created with default settings.
@@ -26,13 +24,13 @@ def get_logger(service_name=APP_NAME) -> logging.Logger:
     """
     from log.config import log_settings
 
-    logger = logging.getLogger(APP_NAME)
+    logger = logging.getLogger(log_settings.service_name)
     if not logger.handlers:
         # Logger not set up yet, initialize it with defaults
         return setup_logging(
-            service_name,
-            log_settings.console_level,
-            log_settings.otlp_level,
+            log_settings.service_name,
+            log_settings.log_console_level,
+            log_settings.log_otlp_level,
             log_settings.otlp_endpoint,
         )
 
@@ -94,10 +92,14 @@ def setup_logging(
 
     # --- OTLP Handler (sends logs to collector) ---
     if otlp_endpoint:
-        otlp_handler = _get_otlp_logging_handler(service_name, otlp_level, otlp_endpoint)
-        if otlp_handler:
-            otlp_handler.addFilter(otel_filter)
-            logger.addHandler(otlp_handler)
+        try:
+            otlp_handler = _get_otlp_logging_handler(service_name, otlp_level, otlp_endpoint)
+            if otlp_handler:
+                otlp_handler.addFilter(otel_filter)
+                logger.addHandler(otlp_handler)
+        except Exception as e:
+            logger.exception("Failed to create OTLP logging handler", extra={"error": str(e)})
+
     else:
         logger.warning("OTLP endpoint not provided, skipping OTLP log handler setup.")
 
