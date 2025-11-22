@@ -37,6 +37,19 @@ def get_logger() -> logging.Logger:
     return logger
 
 
+def handle_external_dep_logger(name: str, level: str = "WARNING"):
+    """Configure external dependency logger to use the same handlers as our application logger.
+
+    Args:
+        name: Name of the external logger
+        level: Log level for the external logger
+    """
+    logger = get_logger()
+    external_logger = logging.getLogger(name)
+    external_logger.setLevel(getattr(logging, level.upper(), logging.WARNING))
+    external_logger.handlers = logger.handlers
+
+
 def setup_logging(
     service_name: str,
     console_level: str = "DEBUG",
