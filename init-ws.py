@@ -48,11 +48,13 @@ def install_poetry():
 
 
 def install_dependencies():
-    run_command(["poetry", "install"])
+    venv_python = get_venv_python()
+    run_command([venv_python, "-m", "poetry", "install"])
 
 
 def install_precommit():
-    run_command(["pre-commit", "install"])
+    venv_python = get_venv_python()
+    run_command([venv_python, "-m", "poetry", "run", "pre-commit", "install"])
 
 
 def install_vscode_extensions():
@@ -72,7 +74,14 @@ def install_vscode_extensions():
         return
     for ext in recommendations:
         print(f"Installing VSCode extension: {ext}")
-        run_command(["code", "--install-extension", ext])
+        try:
+            run_command(["code", "--install-extension", ext])
+        except subprocess.CalledProcessError:
+            print(f"Regular release installation failed, trying pre-release for: {ext}")
+            try:
+                run_command(["code", "--install-extension", ext, "--pre-release"])
+            except subprocess.CalledProcessError:
+                print(f"Failed to install {ext} (both release and pre-release)")
 
 
 def main():
