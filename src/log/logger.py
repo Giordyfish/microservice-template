@@ -22,7 +22,7 @@ def get_logger() -> logging.Logger:
         >>> logger = get_logger("api_gateway")
         >>> logger.info("Processing request")
     """
-    from log.config import log_settings
+    from .config import log_settings
 
     logger = logging.getLogger(log_settings.service_name)
     if not logger.handlers:

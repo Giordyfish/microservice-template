@@ -3,13 +3,14 @@
 import httpx
 from fastapi import APIRouter
 
-from api.pingpong.models import (
+from log import get_logger
+
+from .models import (
     PingRequest,
     PongResponse,
     SendPingRequest,
     SendPingResponse,
 )
-from log import get_logger
 
 logger = get_logger()
 router = APIRouter()

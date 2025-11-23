@@ -71,6 +71,49 @@ curl -X POST http://localhost:3000/api/v1/pong \
   -d '{"message": "Ping"}'
 ```
 
+### 4. Run with Docker
+
+Build and run the service using Docker:
+
+```bash
+# Build the Docker image
+docker build -t microservice-template .
+
+# Run the container
+docker run -p 3000:3000 microservice-template
+
+# Run with environment variables
+docker run -p 3000:3000 \
+  -e SERVICE_NAME=my-service \
+  -e OTLP_ENDPOINT=http://host.docker.internal:4318 \
+  microservice-template
+
+# Run with .env file
+docker run -p 3000:3000 --env-file .env microservice-template
+```
+
+The container includes a health check that automatically monitors the `/api/v1/health` endpoint.
+
+#### Docker Compose Example
+
+```yaml
+version: '3.8'
+
+services:
+  microservice:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - SERVICE_NAME=my-service
+      - OTLP_ENDPOINT=http://otel-collector:4318
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:3000/api/v1/health')"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+```
+
 ## Key Concepts
 
 ### Structured Logging
@@ -202,10 +245,8 @@ src/
 | `SERVICE_NAME`      | Name of the service (used in traces) | `microservice`    |
 | `PORT`              | Port to run the service on           | `3000`            |
 | `OTLP_ENDPOINT`     | OpenTelemetry collector endpoint     | `None` (disabled) |
-| `LOG_NAME`          | Logger name                          | `app`             |
 | `LOG_CONSOLE_LEVEL` | Console log level                    | `DEBUG`           |
 | `LOG_OTLP_LEVEL`    | OTLP log level                       | `INFO`            |
-| `LOG_OTLP_ENDPOINT` | OTLP endpoint for logs               | `None` (disabled) |
 
 ## Next Steps
 
