@@ -8,6 +8,8 @@ to be imported even if OpenTelemetry is not installed yet.
 
 from typing import Optional
 
+from opentelemetry import trace
+
 
 def get_trace_id() -> Optional[str]:
     """Get the current trace ID from OpenTelemetry context.
@@ -23,9 +25,6 @@ def get_trace_id() -> Optional[str]:
         '4bf92f3577b34da6a3ce929d0e0e4736'
     """
     try:
-        # Lazy import to avoid requiring opentelemetry at module import time
-        from opentelemetry import trace
-
         span = trace.get_current_span()
         if span and span.get_span_context().trace_id != 0:
             # Convert trace_id (128-bit int) to 32-char hex string
@@ -50,9 +49,6 @@ def get_span_id() -> Optional[str]:
         '00f067aa0ba902b7'
     """
     try:
-        # Lazy import to avoid requiring opentelemetry at module import time
-        from opentelemetry import trace
-
         span = trace.get_current_span()
         if span and span.get_span_context().span_id != 0:
             # Convert span_id (64-bit int) to 16-char hex string

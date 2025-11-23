@@ -4,6 +4,8 @@ import logging
 import sys
 from typing import Dict, Optional
 
+from .config import log_settings
+
 _OTLP_HANDLERS: Dict[str, logging.Handler] = {}
 
 
@@ -22,8 +24,6 @@ def get_logger() -> logging.Logger:
         >>> logger = get_logger("api_gateway")
         >>> logger.info("Processing request")
     """
-    from .config import log_settings
-
     logger = logging.getLogger(log_settings.service_name)
     if not logger.handlers:
         # Logger not set up yet, initialize it with defaults
