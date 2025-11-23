@@ -87,17 +87,22 @@ docker run -p 3000:3000 \
   -e SERVICE_NAME=my-service \
   -e OTLP_ENDPOINT=http://host.docker.internal:4318 \
   microservice-template
-
-# Run with .env file
-docker run -p 3000:3000 --env-file .env microservice-template
 ```
+
+**Important**: The `.env` file is excluded from the Docker image (see [.dockerignore](.dockerignore)). You must pass environment variables explicitly using `-e` flags or `--env-file`.
+
+**Networking Note**: When running the microservice in Docker and connecting to an observability stack:
+
+- **OTLP Collector on host machine**: Use `host.docker.internal:4318` (Docker Desktop on Windows/Mac) or `--network host` (Linux)
+- **OTLP Collector in Docker Compose**: Use the service name, e.g., `otel-collector:4318` (see Docker Compose example below)
+- **Local development** (not in Docker): Use `localhost:4318`
 
 The container includes a health check that automatically monitors the `/api/v1/health` endpoint.
 
 #### Docker Compose Example
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   microservice:
@@ -108,7 +113,13 @@ services:
       - SERVICE_NAME=my-service
       - OTLP_ENDPOINT=http://otel-collector:4318
     healthcheck:
-      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:3000/api/v1/health')"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import httpx; httpx.get('http://localhost:3000/api/v1/health')",
+        ]
       interval: 30s
       timeout: 3s
       retries: 3
